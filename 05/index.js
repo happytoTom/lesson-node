@@ -30,25 +30,27 @@ module.exports = class TestNow {
 
     const mod = require(fileName);
     let source;
+    console.log("typeof mod === object", typeof mod === "object");
     if (typeof mod === "object") {
       source = Object.keys(mod)
-        .map((v) => this.getTestSource(v, path.basename(fileName)))
+        .map((v) => this.getTestSource(v, path.basename(fileName), true))
         .join("\n");
     } else if (typeof mod == "function") {
       source = this.getTestSource(
         path.basename(fileName).replace(".js", ""),
-        basename
+        path.basename(fileName)
       );
     }
     fs.writeFileSync(testFileName, source);
   }
   getTestSource(methodName, classFile, isClass = false) {
-    console.log("getTestSource", methodName);
+    console.log("getTestSource", isClass);
+    console.log("methodName", methodName);
     return `
     test('${"Test " + methodName}',()=>{
       const ${isClass ? "{" + methodName + "}" : methodName} = require('${
       "../" + classFile
-    }')
+    }');
       let ret = ${methodName}()
       // expect(ret)
       //    .toBe('test return')
